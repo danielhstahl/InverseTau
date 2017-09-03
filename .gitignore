@@ -3,3 +3,4 @@
 *.gcda
 *.o
 invertTau
+*.csv
