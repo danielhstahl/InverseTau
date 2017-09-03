@@ -15,16 +15,14 @@ configuration:
   - Release
 
 
-clone_folder: C:\projects\cfdistutilities
+clone_folder: C:\projects\InverseTau
 
 install:
   - cmd: cd C:\projects
   - cmd: git clone https://github.com/phillyfan1138/FunctionalUtilities
-  - cmd: git clone https://github.com/phillyfan1138/GaussNewton
+  - cmd: git clone https://github.com/phillyfan1138/ODESolver
   - cmd: git clone https://github.com/phillyfan1138/FangOost
-  - cmd: git clone https://github.com/phillyfan1138/TupleUtilities
-  - cmd: git clone https://github.com/phillyfan1138/AutoDiff
-  - cmd: cd cfdistutilities
+  - cmd: cd InverseTau
   - cmd: make
 
 build: off

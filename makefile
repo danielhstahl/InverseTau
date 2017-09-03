@@ -1,4 +1,4 @@
-INCLUDES= -I../FangOost -I../FunctionalUtilities -I../GaussNewton -I../ODESolver -I../AutoDiff
+INCLUDES= -I../FangOost -I../FunctionalUtilities -I../ODESolver 
 GCCVAL=g++
 
 UNAME_S := $(shell uname -s)
