@@ -4,15 +4,6 @@
 #include "ODESolver.h"
 #include <iostream>
 
-std::vector<std::vector<double> > transpose(const std::vector<std::vector<std::complex<double> > >& data, double cp) {
-    std::vector<std::vector<double> > result(data[0].size(),
-                                          std::vector<double>(data.size()));
-    for (std::vector<double>::size_type i = 0; i < data[0].size(); i++) 
-        for (std::vector<double>::size_type j = 0; j < data.size(); j++) {
-            result[i][j] = data[j][i].real()*cp;
-        }
-    return result;
-}
 int main(){
     constexpr int discreteX=298; //discrete X
     constexpr int discreteTau=1024; //discrete t
@@ -40,7 +31,6 @@ int main(){
         return std::complex<double>(0.0, -u);
     };
     auto du=fangoost::computeDU(tMin, tMax);
-    auto cp=fangoost::computeCP(du);
     auto matrixOfXByU=futilities::for_each_parallel(0, discreteU, [&](const auto& index){
         auto fnConstant=uFn(fangoost::getU(du, index));
         return odesolver::solveODE_diff(sigmaFn, alphaFn, [&](const auto& x){
@@ -48,9 +38,10 @@ int main(){
         }, initLower, initHigher, xMin, xMax, discreteX);
     });
     auto dT=fangoost::computeDX(discreteTau, tMin, tMax);
-    auto transposeVector=transpose(matrixOfXByU, cp);
     auto vectorOfDistributions=futilities::for_each_parallel(0, discreteX, [&](const auto& index){
-        return fangoost::computeInvDiscrete(discreteTau, tMin, tMax, transposeVector[index]);
+        return fangoost::computeInv(discreteTau, discreteU, tMin, tMax, [&](const auto& u){
+            return matrixOfXByU[round(u.imag()/du)][index];
+        });
     });
     
     std::cout<<"x, density"<<std::endl;
