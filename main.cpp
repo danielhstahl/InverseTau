@@ -3,7 +3,7 @@
 #include "FangOost.h"
 #include "ODESolver.h"
 #include <iostream>
-
+#include <chrono>
 int main(){
     constexpr int discreteX=298; //discrete X
     constexpr int discreteTau=1024; //discrete t
@@ -31,6 +31,7 @@ int main(){
         return std::complex<double>(0.0, -u);
     };
     auto du=fangoost::computeDU(tMin, tMax);
+    auto started = std::chrono::high_resolution_clock::now();
     auto matrixOfXByU=futilities::for_each_parallel(0, discreteU, [&](const auto& index){
         auto fnConstant=uFn(fangoost::getU(du, index));
         return odesolver::solveODE_diff(sigmaFn, alphaFn, [&](const auto& x){
@@ -43,7 +44,8 @@ int main(){
             return matrixOfXByU[round(u.imag()/du)][index];
         });
     });
-    
+    auto done = std::chrono::high_resolution_clock::now();
+    std::cout << "Total time: "<<std::chrono::duration_cast<std::chrono::milliseconds>(done-started).count()<<std::endl;
     std::cout<<"x, density"<<std::endl;
     for(int i=0;i<discreteTau;++i){
         std::cout<<fangoost::getX(tMin, dT, i)<<", "<<vectorOfDistributions[60][i]<<std::endl;
